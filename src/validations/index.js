@@ -1,5 +1,5 @@
 const answersValidations = require('./answer.js')
-const dificultyValidations = require('./difficulty,js')
+const dificultyValidations = require('./difficulty.js')
 const questionsAnswersValidations = require('./question_answers.js')
 const questionValidations = require('./question.js')
 const subjectValidations = require('./subject.js')
