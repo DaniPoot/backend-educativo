@@ -6,12 +6,16 @@ const difficultiesRoutes = require('./difficulties.routes.js')
 const questionsRouters = require('./questions.routes.js')
 const topicsRouters = require('./topics.routes.js')
 const subjectsRouters = require('./subjects.routes.js')
+const userRoutes = require('./users.routes.js')
+
+const authMiddleware = require('../middlewares/auth.middleware.js')
 
 router.use('/', loginRoutes)
-router.use('/answers', answersRoutes)
-router.use('/difficulties', difficultiesRoutes)
-router.use('/questions', questionsRouters)
-router.use('/topics', topicsRouters)
-router.use('/subjects', subjectsRouters)
+router.use('/answers', authMiddleware, answersRoutes)
+router.use('/difficulties', authMiddleware, difficultiesRoutes)
+router.use('/questions', authMiddleware, questionsRouters)
+router.use('/topics', authMiddleware, topicsRouters)
+router.use('/subjects', authMiddleware, subjectsRouters)
+router.use('/user', userRoutes)
 
 module.exports = router
