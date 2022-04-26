@@ -65,7 +65,7 @@ Users.hasMany(Answers, {
 
 Users.hasMany(Difficulties, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
@@ -73,7 +73,7 @@ Users.hasMany(Difficulties, {
 
 Users.hasMany(QuestionsAnswers, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
@@ -81,7 +81,7 @@ Users.hasMany(QuestionsAnswers, {
 
 Users.hasMany(Questions, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
@@ -89,7 +89,7 @@ Users.hasMany(Questions, {
 
 Users.hasMany(Subjects, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
@@ -97,7 +97,7 @@ Users.hasMany(Subjects, {
 
 Users.hasMany(Topics, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
@@ -105,7 +105,7 @@ Users.hasMany(Topics, {
 
 Users.hasMany(Users, {
   foreignKey: {
-    name: 'create_by'
+    name: 'created_by'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
