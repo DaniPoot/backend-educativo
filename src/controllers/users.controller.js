@@ -1,7 +1,7 @@
 const { Users } = require('../database')
 const { userValidations, loginValidations } = require('../validations')
 const { encryptPassword, isSamePassword } = require('../helpers/encryption.js')
-const { generateAccessToken } = require('../helpers/tokens.js')
+const { generateAccessToken, generateResetToken, verifyResetToken } = require('../helpers/tokens.js')
 
 const createUser = async (req, res) => {
   try {
@@ -61,7 +61,87 @@ const findUserWithCredentials = async (req, res) => {
   }
 }
 
+const createResetToken = async (req, res) => {
+  try {
+    const { body } = req
+    const user = await Users.findOne({
+      where: {
+        email: body.email
+      },
+      attributes: {
+        exclude: ['password']
+      }
+    })
+    const token = generateResetToken({ ...user, userId: user.id })
+    return res.status(200).json({
+      status: 200,
+      token
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error: error
+    })
+  }
+}
+
+const findUserByToken = async (req, res) => {
+  try {
+    const { token } = req.headers
+    const { body } = req
+    const { userId } = verifyResetToken(token)
+    const user = await Users.findOne({
+      where: {
+        id: userId
+      },
+      attributes: {
+        exclude: ['password']
+      }
+    })
+    if (!body.password) throw new Error('"password" field is required')
+    const password = await encryptPassword(body.password)
+    user.update({ password })
+    return res.status(200).json({
+      status: 200
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error: error
+    })
+  }
+}
+
+const updateUserById = async (req, res) => {
+  try {
+    const { body } = req
+    const user = await Users.findOne({
+      where: {
+        id: body.id
+      },
+      attributes: {
+        exclude: ['password']
+      }
+    })
+    user.update({ body })
+    return res.status(200).json({
+      status: 200
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error: error
+    })
+  }
+}
+
 module.exports = {
   createUser,
-  findUserWithCredentials
+  findUserWithCredentials,
+  createResetToken,
+  findUserByToken,
+  updateUserById
 }
