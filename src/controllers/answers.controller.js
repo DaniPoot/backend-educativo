@@ -67,8 +67,31 @@ const updateAnswerById = async (req, res) => {
   }
 }
 
+const deleteAnswerById = async (req, res) => {
+  try {
+    const id = req.params.id
+    const answer = await Answers.findOne({
+      where: {
+        id
+      }
+    })
+    await answer.update({ is_deleted: true })
+    return res.status(200).json({
+      status: 200,
+      answer
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   getAllAnswersByUser,
   createAnswerByUser,
-  updateAnswerById
+  updateAnswerById,
+  deleteAnswerById
 }
