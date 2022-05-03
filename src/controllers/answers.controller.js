@@ -9,7 +9,8 @@ const getAllAnswersByUser = async (req, res) => {
 
     const answers = await Answers.findAll({
       where: {
-        created_by: body.created_by
+        created_by: body.created_by,
+        is_deleted: false
       }
     })
     return res.status(200).json({
