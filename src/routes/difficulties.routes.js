@@ -1,9 +1,9 @@
 const { Router } = require('express')
 const router = Router()
 
-const { createDifficulty, getDifficulties } = require('../controllers/difficulties.controller.js')
+const { createDifficulty, getDifficultiesByUser } = require('../controllers/difficulties.controller.js')
 
 router.post('/create', createDifficulty)
-router.get('/', getDifficulties)
+router.get('/', getDifficultiesByUser)
 
 module.exports = router
