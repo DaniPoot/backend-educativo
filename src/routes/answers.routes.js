@@ -6,5 +6,6 @@ const { getAllAnswersByUser, createAnswerByUser, updateAnswerById } = require('.
 router.post('/create', createAnswerByUser)
 router.get('/', getAllAnswersByUser)
 router.put('/:id', updateAnswerById)
+router.delete('/:id', updateAnswerById)
 
 module.exports = router
