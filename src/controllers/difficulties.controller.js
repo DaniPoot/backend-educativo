@@ -60,8 +60,57 @@ const getDifficultiesByUser = async (req, res) => {
   }
 }
 
+const updateDifficulty = async (req, res) => {
+  try {
+    const { body } = req
+    const id = req.params.id
+    const difficulty = await Difficulties.findOne({
+      where: {
+        id
+      }
+    })
+    await difficulty.update(body)
+    return res.status(200).json({
+      status: 200,
+      difficulties: [difficulty]
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
+const deleteDifficulty = async (req, res) => {
+  try {
+    const id = req.params.id
+
+    const difficulty = await Difficulties.findOne({
+      where: {
+        id
+      }
+    })
+    await difficulty.update({ is_deleted: true })
+
+    return res.status(200).json({
+      status: 200,
+      difficulties: [difficulty]
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   createDifficulty,
   getDifficulties,
-  getDifficultiesByUser
+  getDifficultiesByUser,
+  updateDifficulty,
+  deleteDifficulty
 }
