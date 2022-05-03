@@ -35,7 +35,33 @@ const getDifficulties = async (req, res) => {
   }
 }
 
+const getDifficultiesByUser = async (req, res) => {
+  try {
+    const { body } = req
+    if (!body.created_by) throw new Error('"created_by" field is required')
+
+    const difficulties = await Difficulties.findAll({
+      where: {
+        created_by: body.created_by,
+        is_deleted: false
+      }
+    })
+
+    return res.status(200).json({
+      status: 200,
+      difficulties
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   createDifficulty,
-  getDifficulties
+  getDifficulties,
+  getDifficultiesByUser
 }
