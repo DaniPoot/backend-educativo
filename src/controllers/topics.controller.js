@@ -101,10 +101,31 @@ const getAllTopicsByUser = async (req, res) => {
   }
 }
 
+const getAllTopicsBySubject = async (req, res) => {
+  try {
+    const { body } = req
+    if (!body.id_subject) throw new Error('"id_subject" field is required')
+
+    const topics = await Topics.findAll({ where: { id_subject: body.id_subject, is_deleted: false } })
+
+    return res.status(200).json({
+      status: 200,
+      topics
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   getTopic,
   createTopicByUser,
   updatedTopic,
   deleteTopic,
-  getAllTopicsByUser
+  getAllTopicsByUser,
+  getAllTopicsBySubject
 }
