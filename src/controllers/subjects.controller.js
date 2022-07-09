@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const { Subjects } = require('../database')
 const { subjectValidations } = require('../validations')
 
@@ -96,10 +97,38 @@ const getAllSubjectsByUser = async (req, res) => {
   }
 }
 
+const getAllSubjectsByQuery = async (req, res) => {
+  try {
+    const { body } = req
+    if (!body.query) throw new Error('"query" field is required')
+    const subjects = await Subjects.findAll({
+      where: {
+        name: {
+          [Op.like]: `%${body.query}%`
+         },
+        is_deleted: false
+      },
+      attributes: ['id', 'name']
+    })
+
+    return res.status(201).json({
+      status: 200,
+      subjects
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   createSubject,
   getSubject,
   updateSubject,
   deleteSubject,
-  getAllSubjectsByUser
+  getAllSubjectsByUser,
+  getAllSubjectsByQuery
 }
