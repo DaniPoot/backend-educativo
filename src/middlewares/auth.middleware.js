@@ -6,7 +6,7 @@ const auth = (req, res, next) => {
     if (!authorization || !authorization.includes('Bearer')) throw new Error('Missing Authentication Token')
     const token = authorization.split(' ')[1]
     const { userId } = verifyAccessToken(token)
-    if (!req.body.userId && req.body.userId !== userId) {
+    if (!userId) {
       throw new Error('Invalid User ID')
     } else {
       next()
