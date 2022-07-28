@@ -15,15 +15,16 @@ const Subjects = require('../models/Subjects.js')(sequelize, Sequelize)
 const Topics = require('../models/Topics.js')(sequelize, Sequelize)
 const Users = require('../models/Users.js')(sequelize, Sequelize)
 
-Questions.hasMany(QuestionsAnswers, {
+Questions.belongsToMany(Answers, {
+  through: QuestionsAnswers,
   foreignKey: {
     name: 'id_question'
   },
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
 })
-
-Answers.hasMany(QuestionsAnswers, {
+Answers.belongsToMany(Questions, {
+  through: QuestionsAnswers,
   foreignKey: {
     name: 'id_answer'
   },
