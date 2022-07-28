@@ -6,6 +6,7 @@ const subjectValidations = require('./subject.js')
 const topicValidations = require('./topic.js')
 const userValidations = require('./user.js')
 const loginValidations = require('./login.js')
+const questionsByTopicsDifficulties = require('./question_by_topics_difficulties.js')
 
 module.exports = {
   answersValidations,
@@ -15,5 +16,6 @@ module.exports = {
   subjectValidations,
   topicValidations,
   userValidations,
-  loginValidations
+  loginValidations,
+  questionsByTopicsDifficulties
 }
