@@ -1,4 +1,4 @@
-const { Questions, sequelize } = require('../database')
+const { Questions, sequelize, Answers } = require('../database')
 const { questionValidations, questionsByTopicsDifficulties } = require('../validations')
 
 const createQuestionByUser = async (req, res) => {
@@ -76,6 +76,32 @@ const deleteQuestion = async (req, res) => {
   }
 }
 
+const assignAnswersToQuestions = async (req, res) => {
+  try {
+    const { params: { id }, body: { answers: answersBody } } = req
+
+    const answersId = answersBody.map(answer => answer.id)
+    const question = await Questions.findOne({ where: { id }, include: [Answers] })
+    const answers = await Answers.findAll({ where: { id: answersId } })
+
+    for (const answer of answers) {
+      const answerBody = answersBody.find(a => a.id === answer.id)
+      await question.addAnswer(answer, { through: { is_correct: answerBody.is_correct, created_by: answerBody.created_by } })
+    }
+
+    return res.status(201).json({
+      status: 201,
+      question: [ question ]
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 const getQuestionByTopicsAndDifficulties = async (req, res) => {
   try {
     const { body } = req
@@ -107,7 +133,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
         joinTableAttributes: []
       })
       const answersCorrect = await question.getAnswers({
-        limit: 1,
+        limit: 4,
         attributes: ['id', 'description'],
         through: {
           where: {
@@ -125,7 +151,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
 
     return res.status(201).json({
       status: 201,
-      questions: [ newQuestions ]
+      questions: newQuestions
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
@@ -141,5 +167,6 @@ module.exports = {
   getAllQuestionByUser,
   updateQuestion,
   deleteQuestion,
+  assignAnswersToQuestions,
   getQuestionByTopicsAndDifficulties
 }
