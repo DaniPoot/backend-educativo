@@ -81,9 +81,25 @@ const deleteSubject = async (req, res) => {
 
 const getAllSubjectsByUser = async (req, res) => {
   try {
-    const { body } = req
-    if (!body.created_by) throw new Error('"created_by" field is required')
-    const subjects = await Subjects.findAll({ where: { created_by: body.created_by, is_deleted: false } })
+    const { params: { id } } = req
+    if (!id) throw new Error('"id" param is required')
+    const subjects = await Subjects.findAll({ where: { created_by: id, is_deleted: false } })
+    return res.status(201).json({
+      status: 201,
+      subjects
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
+const getAllSubjects = async (req, res) => {
+  try {
+    const subjects = await Subjects.findAll({ where: { is_deleted: false } })
     return res.status(201).json({
       status: 201,
       subjects
@@ -99,12 +115,12 @@ const getAllSubjectsByUser = async (req, res) => {
 
 const getAllSubjectsByQuery = async (req, res) => {
   try {
-    const { body } = req
-    if (!body.query) throw new Error('"query" field is required')
+    const { query: { query } } = req
+    if (!query) throw new Error('"query" param is required')
     const subjects = await Subjects.findAll({
       where: {
         name: {
-          [Op.like]: `%${body.query}%`
+          [Op.like]: `%${query}%`
          },
         is_deleted: false
       },
@@ -130,5 +146,6 @@ module.exports = {
   updateSubject,
   deleteSubject,
   getAllSubjectsByUser,
+  getAllSubjects,
   getAllSubjectsByQuery
 }
