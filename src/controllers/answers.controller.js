@@ -1,4 +1,4 @@
-const { Answers } = require('../database')
+const { Answers, QuestionsAnswers } = require('../database')
 const { answersValidations } = require('../validations')
 
 const getAllAnswersByUser = async (req, res) => {
@@ -70,7 +70,7 @@ const updateAnswerById = async (req, res) => {
 const deleteAnswerById = async (req, res) => {
   try {
     const id = req.params.id
-    const answer = await Answers.findOne({
+    const answer = await QuestionsAnswers.findOne({
       where: {
         id
       }
@@ -89,9 +89,33 @@ const deleteAnswerById = async (req, res) => {
   }
 }
 
+const verifyAnswer = async (req, res) => {
+  try {
+    const { body: { question, answer } } = req
+    const answersResponse = await QuestionsAnswers.findOne({
+      where: {
+        id_question: question,
+        id_answer: answer
+      }
+    })
+    const isCorrect = answersResponse.is_correct
+    return res.status(200).json({
+      status: 200,
+      is_correct: isCorrect
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   getAllAnswersByUser,
   createAnswerByUser,
   updateAnswerById,
+  verifyAnswer,
   deleteAnswerById
 }
