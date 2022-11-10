@@ -1,7 +1,7 @@
 const { Users } = require('../database')
 const { userValidations, loginValidations } = require('../validations')
 const { encryptPassword, isSamePassword } = require('../helpers/encryption.js')
-const { generateAccessToken, generateResetToken, verifyResetToken } = require('../helpers/tokens.js')
+const { generateAccessToken, generateResetToken, verifyResetToken, verifyAccessToken } = require('../helpers/tokens.js')
 
 const createUser = async (req, res) => {
   try {
@@ -138,10 +138,40 @@ const updateUserById = async (req, res) => {
   }
 }
 
+const verifyAuthToken = async (req, res) => {
+  try {
+    const { body: { token, userId: id } } = req
+    if (!id) throw new Error('"userId" field is required')
+    const { userId } = verifyAccessToken(token)
+    if (!userId === id) throw new Error('Invalid autorization token')
+
+    const user = await Users.findOne({
+      where: {
+        id
+      }
+    })
+
+    const newToken = generateAccessToken({ ...user, userId })
+
+    return res.status(200).json({
+      status: 200,
+      user,
+      token: newToken
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error: error
+    })
+  }
+}
+
 module.exports = {
   createUser,
   findUserWithCredentials,
   createResetToken,
   findUserByToken,
-  updateUserById
+  updateUserById,
+  verifyAuthToken
 }
