@@ -37,12 +37,12 @@ const getDifficulties = async (req, res) => {
 
 const getDifficultiesByUser = async (req, res) => {
   try {
-    const { body } = req
-    if (!body.created_by) throw new Error('"created_by" field is required')
+    const { params: { id } } = req
+    if (!id) throw new Error('"user id" field is required')
 
     const difficulties = await Difficulties.findAll({
       where: {
-        created_by: body.created_by,
+        created_by: id,
         is_deleted: false
       }
     })
