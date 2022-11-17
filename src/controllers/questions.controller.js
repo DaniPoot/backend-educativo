@@ -114,7 +114,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
         id_difficulty: difficulties,
         is_deleted: false
       },
-      limit: 10,
+      limit: 50,
       attributes: ['id', 'description', 'id_topic', 'id_difficulty'],
       order: sequelize.random()
     })
