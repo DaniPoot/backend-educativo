@@ -23,6 +23,22 @@ Questions.belongsToMany(Answers, {
   onDelete: 'CASCADE',
   onUpdate: 'CASCADE'
 })
+
+Questions.belongsTo(Difficulties, {
+  foreignKey: {
+    name: 'id_difficulty'
+  },
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE'
+})
+Questions.belongsTo(Topics, {
+  foreignKey: {
+    name: 'id_topic'
+  },
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE'
+})
+
 Answers.belongsToMany(Questions, {
   through: QuestionsAnswers,
   foreignKey: {
@@ -43,6 +59,14 @@ Difficulties.hasMany(Questions, {
 Topics.hasMany(Questions, {
   foreignKey: {
     name: 'id_topic'
+  },
+  onDelete: 'SET NULL',
+  onUpdate: 'CASCADE'
+})
+
+Topics.belongsTo(Subjects, {
+  foreignKey: {
+    name: 'id_subject'
   },
   onDelete: 'SET NULL',
   onUpdate: 'CASCADE'
