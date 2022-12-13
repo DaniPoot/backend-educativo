@@ -1,4 +1,4 @@
-const { Questions, sequelize, Answers } = require('../database')
+const { Questions, sequelize, Answers, Difficulties, Topics, Subjects } = require('../database')
 const { questionValidations, questionsByTopicsDifficulties } = require('../validations')
 
 const createQuestionByUser = async (req, res) => {
@@ -23,9 +23,24 @@ const createQuestionByUser = async (req, res) => {
 
 const getAllQuestionByUser = async (req, res) => {
   try {
-    const { body } = req
-    if (!body.created_by) throw new Error('"created_by" field is required')
-    const questions = await Questions.findAll({ where: { created_by: body.created_by, is_deleted: false } })
+    const { params: { id } } = req
+    if (!id) throw new Error('"user_id" field is required')
+    const questions = await Questions.findAll({
+      where: {
+        created_by: id,
+        is_deleted: false
+      },
+      include: [
+        { model: Difficulties, attributes: ['name'] },
+        { model:
+          Topics,
+          attributes: ['name'],
+          include: [
+            { model: Subjects, attributes: ['name'] }
+          ]
+        }
+      ]
+    })
     return res.status(201).json({
       status: 201,
       questions
@@ -89,9 +104,22 @@ const assignAnswersToQuestions = async (req, res) => {
       await question.addAnswer(answer, { through: { is_correct: answerBody.is_correct, created_by: answerBody.created_by } })
     }
 
+    const newAnsers = await question.getAnswers({
+      attributes: ['id', 'description'],
+      through: {
+        where: {
+          is_deleted: false
+        }
+      },
+      joinTableAttributes: ['is_correct']
+    })
+
     return res.status(201).json({
       status: 201,
-      question: [ question ]
+      questions: [{
+        ...question.dataValues,
+        answers: newAnsers
+      }]
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
