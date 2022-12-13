@@ -1,4 +1,4 @@
-const { Topics } = require('../database')
+const { Topics, Subjects } = require('../database')
 const { topicValidations } = require('../validations')
 
 const createTopicByUser = async (req, res) => {
@@ -81,12 +81,39 @@ const deleteTopic = async (req, res) => {
   }
 }
 
+const getAllTopics = async (req, res) => {
+  try {
+    const topics = await Topics.findAll({
+      where: { is_deleted: false },
+      include: [
+        { model: Subjects, through: { attributes: ['name'] } }
+      ]
+    })
+
+    return res.status(201).json({
+      status: 201,
+      topics
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 const getAllTopicsByUser = async (req, res) => {
   try {
-    const { body } = req
-    if (!body.created_by) throw new Error('"created_by" field is required')
+    const { params: { id } } = req
+    if (!id) throw new Error('"created_by" field is required')
 
-    const topics = await Topics.findAll({ where: { created_by: body.created_by, is_deleted: false } })
+    const topics = await Topics.findAll({
+      where: { created_by: id, is_deleted: false },
+      include: [
+        { model: Subjects, attributes: ['name'] }
+      ]
+    })
 
     return res.status(201).json({
       status: 201,
@@ -107,7 +134,6 @@ const getAllTopicsBySubject = async (req, res) => {
     if (!subjectId) throw new Error('"id_subject" field is required')
 
     const topics = await Topics.findAll({ where: { id_subject: subjectId, is_deleted: false } })
-    console.log({ topics })
 
     return res.status(200).json({
       status: 200,
@@ -123,6 +149,7 @@ const getAllTopicsBySubject = async (req, res) => {
 }
 
 module.exports = {
+  getAllTopics,
   getTopic,
   createTopicByUser,
   updatedTopic,
