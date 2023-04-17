@@ -1,6 +1,39 @@
 const { Questions, sequelize, Answers, Difficulties, Topics, Subjects } = require('../database')
 const { questionValidations, questionsByTopicsDifficulties } = require('../validations')
 
+const getQuestionById = async (req, res) => {
+  try {
+    const { params: { id } } = req
+    if (!id) throw new Error('"question_id" field is required')
+    const questions = await Questions.findOne({
+      where: {
+        id
+      },
+      include: [
+        { model: Difficulties, attributes: ['name'] },
+        { model:
+          Topics,
+          attributes: ['name'],
+          include: [
+            { model: Subjects, attributes: ['name'] }
+          ]
+        }
+      ]
+    })
+
+    return res.status(201).json({
+      status: 201,
+      questions: [ questions ]
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 const createQuestionByUser = async (req, res) => {
   try {
     const { body } = req
@@ -191,6 +224,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
 }
 
 module.exports = {
+  getQuestionById,
   createQuestionByUser,
   getAllQuestionByUser,
   updateQuestion,
