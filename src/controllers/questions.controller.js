@@ -43,7 +43,7 @@ const createQuestionByUser = async (req, res) => {
 
     return res.status(201).json({
       status: 201,
-      questions: [ question ]
+      questions: [question]
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
@@ -65,8 +65,9 @@ const getAllQuestionByUser = async (req, res) => {
       },
       include: [
         { model: Difficulties, attributes: ['name'] },
-        { model:
-          Topics,
+        {
+          model:
+            Topics,
           attributes: ['name'],
           include: [
             { model: Subjects, attributes: ['name'] }
@@ -95,7 +96,7 @@ const updateQuestion = async (req, res) => {
     question.update(body)
     return res.status(201).json({
       status: 201,
-      questions: [ question ]
+      questions: [question]
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
@@ -113,7 +114,7 @@ const deleteQuestion = async (req, res) => {
     question.update({ is_deleted: true })
     return res.status(201).json({
       status: 201,
-      questions: [ question ]
+      questions: [question]
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
@@ -183,7 +184,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
     const newQuestions = []
     for (const question of questions) {
       const answersFail = await question.getAnswers({
-        limit: 1,
+        limit: 2,
         attributes: ['id', 'description'],
         through: {
           where: {
@@ -194,7 +195,7 @@ const getQuestionByTopicsAndDifficulties = async (req, res) => {
         joinTableAttributes: []
       })
       const answersCorrect = await question.getAnswers({
-        limit: 4,
+        limit: 1,
         attributes: ['id', 'description'],
         through: {
           where: {
