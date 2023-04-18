@@ -54,6 +54,7 @@ const updateAnswerById = async (req, res) => {
       }
     })
     await answer.update(body)
+    await answer.save()
     return res.status(200).json({
       status: 200,
       answer
@@ -142,11 +143,36 @@ const getAnswersByQuestionId = async (req, res) => {
   }
 }
 
+const updateAnswerRelation = async (req, res) => {
+  try {
+    const { body } = req
+    const id = req.params.id
+    const answer = await QuestionsAnswers.findOne({
+      where: {
+        id
+      }
+    })
+    await answer.update(body)
+    await answer.save()
+    return res.status(200).json({
+      status: 200,
+      answer
+    })
+  } catch (e) {
+    const error = e.errors ? e.errors[0].message : e.message
+    return res.status(500).json({
+      status: 500,
+      error
+    })
+  }
+}
+
 module.exports = {
   getAllAnswersByUser,
   createAnswerByUser,
   updateAnswerById,
   verifyAnswer,
   deleteAnswerById,
-  getAnswersByQuestionId
+  getAnswersByQuestionId,
+  updateAnswerRelation
 }
