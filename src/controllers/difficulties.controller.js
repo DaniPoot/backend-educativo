@@ -8,7 +8,7 @@ const createDifficulty = async (req, res) => {
     const difficulty = await Difficulties.create(body)
     return res.status(200).json({
       status: 200,
-      difficulties: [ difficulty ]
+      difficulties: [difficulty]
     })
   } catch (e) {
     const error = e.errors ? e.errors[0].message : e.message
@@ -21,7 +21,7 @@ const createDifficulty = async (req, res) => {
 
 const getDifficulties = async (req, res) => {
   try {
-    const difficulties = await Difficulties.findAll()
+    const difficulties = await Difficulties.findAll({ order: [['order']] })
     return res.status(200).json({
       status: 200,
       difficulties
